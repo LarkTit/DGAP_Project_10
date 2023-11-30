@@ -28,8 +28,8 @@ finished = False
 while not finished:
     display.fill((112, 255, 255))
 
-    camera_scroll[0] += (player.rect().centerx - display.get_width() // 2 - camera_scroll[0]) / 30
-    camera_scroll[1] += (player.rect().centery - display.get_height() // 2 - camera_scroll[1]) / 30
+    camera_scroll[0] += (player.rect().centerx - display.get_width() // 2 - camera_scroll[0]) / 20
+    camera_scroll[1] += (player.rect().centery - display.get_height() // 2 - camera_scroll[1]) / 20
     render_scroll = (int(camera_scroll[0]), int(camera_scroll[1]))
 
     # TODO
