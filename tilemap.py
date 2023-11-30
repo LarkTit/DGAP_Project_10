@@ -14,6 +14,16 @@ class Tilemap:
         for i in range(100):
             self.tilemap[str(3+i) + ";10"] = {'type': 'grass', 'variant': 1, "pos": (3+i, 10)}
 
+        for i in range(3):
+            self.tilemap[str(10+i) + ";9"] = {'type': 'grass', 'variant': 1, "pos": (10+i, 9)}
+            self.tilemap[str(13+i) + ";6"] = {'type': 'grass', 'variant': 1, "pos": (13+i, 6)}
+
+        for i in range(1):
+            self.tilemap[str(3+i) + ";9"] = {'type': 'grass', 'variant': 1, "pos": (3+i, 9)}
+
+        for i in range(3):
+            self.tilemap[str(17+i) + ";3"] = {'type': 'grass', 'variant': 1, "pos": (17+i, 3)}
+
     """Функция tiles_around находит блоки в радиусе 5 блоков от pos (позиция существа)"""
 
     def tiles_around(self, pos):

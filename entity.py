@@ -48,11 +48,11 @@ class PhysicsEntity:
                 if frame_movement[0] > 0:
                     entity_rect.right = rect.left
                     self.collisions['right'] = True
-                    self.velocity[0] = 0
+                    frame_movement[0] = 0
                 if frame_movement[0] < 0:
                     entity_rect.left = rect.right
                     self.collisions['left'] = True
-                    self.velocity[0] = 0
+                    frame_movement[0] = 0
                 self.pos[0] = entity_rect.x
 
         self.pos[1] += frame_movement[1]
@@ -62,10 +62,11 @@ class PhysicsEntity:
                 if frame_movement[1] > 0:
                     entity_rect.bottom = rect.top
                     self.collisions['down'] = True
-                    self.velocity[1] = 0
+                    self.velocity[1] = 1
                 if frame_movement[1] < 0:
                     entity_rect.top = rect.bottom
                     self.collisions['up'] = True
+                    self.velocity[1] = 0
                 self.pos[1] = entity_rect.y
 
 #        if movement[0] > 0:
@@ -75,11 +76,7 @@ class PhysicsEntity:
 
         self.velocity[1] = min(5, self.velocity[1] + 0.15)
 
-        if self.collisions['down'] or self.collisions['up']:
-            self.velocity[1] = 0
-
         if self.collisions['down']:
-
             self.air_time = 0
         else:
             self.air_time += 1

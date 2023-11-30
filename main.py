@@ -21,6 +21,7 @@ assets = {
     'player/jump_up': Animation(load_images('player/jump_up')),
     'player/jump_still': Animation(load_images('player/jump_still')),
     'player/jump_down': Animation(load_images('player/jump_down')),
+    'player/land': Animation(load_images('player/land'), loop=False),
 }
 
 tilemap = tilemap.Tilemap(display)
@@ -50,6 +51,8 @@ while not finished:
     player.render(display, camera_offset=render_scroll)
 
     tilemap.render(display, assets, camera_offset=render_scroll)
+    # for rect in tilemap.physics_rects_around(player.pos):
+    #     pygame.draw.rect(display, (0, 0, 0), rect.move(-render_scroll[0], -render_scroll[1]))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
