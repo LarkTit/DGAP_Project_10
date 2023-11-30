@@ -11,7 +11,7 @@ class Tilemap:
         self.offgrid_tiles = []  # спрайты, свободно расположенные на карте
         self.screen = screen
 
-        for i in range(10):
+        for i in range(100):
             self.tilemap[str(3+i) + ";10"] = {'type': 'grass', 'variant': 1, "pos": (3+i, 10)}
 
     """Функция tiles_around находит блоки в радиусе 5 блоков от pos (позиция существа)"""
