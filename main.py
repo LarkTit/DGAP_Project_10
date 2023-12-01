@@ -21,6 +21,8 @@ assets = {
     'player/jump_up': Animation(load_images('player/jump_up')),
     'player/jump_still': Animation(load_images('player/jump_still')),
     'player/jump_down': Animation(load_images('player/jump_down')),
+    'player/roll': Animation(load_images('player/roll'), img_dur=6),
+    'player/airspin': Animation(load_images('player/airspin'), img_dur=7),
     'player/land': Animation(load_images('player/land'), loop=False),
 }
 
@@ -59,22 +61,22 @@ while not finished:
             finished = True
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_d:
-                player.velocity[0] += 3
+                # player.velocity[0] += 3
                 player.is_moving += 1
             if event.key == pygame.K_a:
-                player.velocity[0] -= 3
+                # player.velocity[0] -= 3
                 player.is_moving -= 1
             if event.key == pygame.K_SPACE:
                 player.jump()
             if event.key == pygame.K_LSHIFT:
-                player.dash()
+                player.roll(assets)
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_d:
                 player.is_moving -= 1
-                player.velocity[0] -= 3
+                # player.velocity[0] -= 3
             if event.key == pygame.K_a:
                 player.is_moving += 1
-                player.velocity[0] += 3
+                # player.velocity[0] += 3
 
     screen.blit(pygame.transform.scale(display, screen.get_size()), (0, 0))
     pygame.display.update()

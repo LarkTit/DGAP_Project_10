@@ -14,6 +14,7 @@ class PhysicsEntity:
         self.air_time = 0
         self.collisions = {'up': False, 'down': False, 'right': False, 'left': False}
         self.flip = False
+        self.speed = 0
 
         self.type = ''
         self.action = ''
@@ -39,7 +40,7 @@ class PhysicsEntity:
     def update(self, tilemap, assets):
         self.collisions = {'up': False, 'down': False, 'right': False, 'left': False}
 
-        frame_movement = [self.velocity[0], self.velocity[1]]
+        frame_movement = [self.is_moving * self.speed + self.velocity[0], self.velocity[1]]
 
         self.pos[0] += frame_movement[0]
         entity_rect = self.rect()
@@ -75,6 +76,10 @@ class PhysicsEntity:
 #            self.flip = True
 
         self.velocity[1] = min(5, self.velocity[1] + 0.15)
+        if self.velocity[0] < 0:
+            self.velocity[0] = min(0, self.velocity[0] + 0.1)
+        else:
+            self.velocity[0] = max(0, self.velocity[0] - 0.1)
 
         if self.collisions['down']:
             self.air_time = 0
