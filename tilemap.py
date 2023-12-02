@@ -11,10 +11,28 @@ class Tilemap:
         self.offgrid_tiles = []  # спрайты, свободно расположенные на карте
         self.screen = screen
 
-        for i in range(10):
+        for i in range(100):
             self.tilemap[str(3+i) + ";10"] = {'type': 'grass', 'variant': 1, "pos": (3+i, 10)}
 
     """Функция tiles_around находит блоки в радиусе 5 блоков от pos (позиция существа)"""
+    def extract(self, id_pairs, keep=False):
+        matches = []
+        for tile in self.offgrid_tiles.copy():
+            if (tile['type'], tile['variant']) in id_pairs:
+                matches.append(tile.copy())
+                if not keep:
+                    self.offgrid_tiles.remove(tile)
+
+        for loc in self.tilemap:
+            tile = self.tilemap[loc]
+            if (tile['type'], tile['variant']) in id_pairs:
+                matches.append(tile.copy())
+            matches[-1]['pos'] = matches[-1]['pos'].copy()
+            matches[-1]['pos'][0] *= self.tile_size
+            matches[-1]['pos'][1] *= self.tile_size
+            if not keep:
+                del self.tilemap[loc]
+        return matches
 
     def tiles_around(self, pos):
         tiles = []
