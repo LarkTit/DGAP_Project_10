@@ -34,7 +34,7 @@ player.set_action(assets, 'idle')
 
 backgrounds = [BackgroundLayer('assets/parallaxforestpack/parallax-mountain-bg.png', display),
                MiddleLayer('assets/parallaxforestpack/parallax-mountain-mountains.png', display),
-               ForegroundLayer('assets/parallaxforestpack/parallax-mountain-foreground-trees.png', display)
+               ForegroundLayer('assets/parallaxforestpack/parallax-mountain-foreground-trees.png', display, move_y_axis=True, y_position=15)
                ]
 
 """Камера"""
@@ -59,9 +59,8 @@ while not finished:
     # Нужно сделать два-три слоя для заднего фона для параллакса
     # (самый дальний фон статичен, второй немного двигается вместе с персонажем ну и так далее)
 
-
     for background in backgrounds:
-        background.draw(display, render_scroll)
+        background.draw(render_scroll)
 
     player.update(tilemap, assets)
     player.render(display, camera_offset=render_scroll)
