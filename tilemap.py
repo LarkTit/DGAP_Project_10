@@ -25,6 +25,24 @@ class Tilemap:
             self.tilemap[str(17+i) + ";3"] = {'type': 'grass', 'variant': 1, "pos": (17+i, 3)}
 
     """Функция tiles_around находит блоки в радиусе 5 блоков от pos (позиция существа)"""
+    def extract(self, id_pairs, keep=False):
+        matches = []
+        for tile in self.offgrid_tiles.copy():
+            if (tile['type'], tile['variant']) in id_pairs:
+                matches.append(tile.copy())
+                if not keep:
+                    self.offgrid_tiles.remove(tile)
+
+        for loc in self.tilemap:
+            tile = self.tilemap[loc]
+            if (tile['type'], tile['variant']) in id_pairs:
+                matches.append(tile.copy())
+            matches[-1]['pos'] = matches[-1]['pos'].copy()
+            matches[-1]['pos'][0] *= self.tile_size
+            matches[-1]['pos'][1] *= self.tile_size
+            if not keep:
+                del self.tilemap[loc]
+        return matches
 
     def tiles_around(self, pos):
         tiles = []
@@ -47,10 +65,13 @@ class Tilemap:
         return rects
 
     def render(self, surface, assets, camera_offset=(0, 0)):
-        for loc in self.tilemap:
-            tile = self.tilemap[loc]
-            surface.blit(assets[tile['type']][tile['variant']], (tile['pos'][0] *
-                                                                 self.tile_size - camera_offset[0], tile['pos'][1] * self.tile_size - camera_offset[1]))
         for tile in self.offgrid_tiles:
             surface.blit()(assets[tile['type']][tile['variant']],
                            (tile['pos'][0] - camera_offset[0], tile['pos'][1] - camera_offset[1]))
+
+        for x in range(camera_offset[0] // self.tile_size, (camera_offset[0] + surface.get_width()) // self.tile_size + 1):
+            for y in range(camera_offset[1] // self.tile_size, (camera_offset[1] + surface.get_height()) // self.tile_size + 1):
+                loc = str(x) + ';' + str(y)
+                if loc in self.tilemap:
+                    tile = self.tilemap[loc]
+                    surface.blit(assets[tile['type']][tile['variant']], (tile['pos'][0] * self.tile_size - camera_offset[0], (tile['pos'][1] * self.tile_size - camera_offset[1])))

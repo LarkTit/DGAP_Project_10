@@ -2,6 +2,8 @@ import pygame
 import tilemap
 from player import Player
 from util import load_image, load_images, Animation
+import entity
+from parallax import BackgroundLayer, MiddleLayer, ForegroundLayer
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -30,8 +32,16 @@ tilemap = tilemap.Tilemap(display)
 player = Player(display, (80, 50))
 player.set_action(assets, 'idle')
 
+backgrounds = [BackgroundLayer('assets/parallaxforestpack/parallax-mountain-bg.png', display),
+               MiddleLayer('assets/parallaxforestpack/parallax-mountain-mountains.png', display),
+               ForegroundLayer('assets/parallaxforestpack/parallax-mountain-foreground-trees.png', display)
+               ]
+
 """Камера"""
 camera_scroll = [0, 0]
+
+"""Частицы"""
+
 
 finished = False
 while not finished:
@@ -48,6 +58,10 @@ while not finished:
     # TODO
     # Нужно сделать два-три слоя для заднего фона для параллакса
     # (самый дальний фон статичен, второй немного двигается вместе с персонажем ну и так далее)
+
+
+    for background in backgrounds:
+        background.draw(display, render_scroll)
 
     player.update(tilemap, assets)
     player.render(display, camera_offset=render_scroll)
