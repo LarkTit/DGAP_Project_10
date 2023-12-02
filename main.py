@@ -1,7 +1,7 @@
 import pygame
 import tilemap
 import entity
-from parallax import BackgroundLayer
+from parallax import BackgroundLayer, MiddleLayer, ForegroundLayer
 
 from util import load_image, load_images
 
@@ -22,7 +22,10 @@ assets = {
 
 tilemap = tilemap.Tilemap(display)
 player = entity.PhysicsEntity(display, (80, 50))
-background = BackgroundLayer("C:\\Users\\rkabi\\OneDrive\\Документы\\GitHub\\DGAP_Project_10\\assets\\parallaxforestpack\\img.png", -2)
+backgrounds = [BackgroundLayer('assets/parallaxforestpack/parallax-mountain-bg.png', display),
+               MiddleLayer('assets/parallaxforestpack/parallax-mountain-mountains.png', display),
+               ForegroundLayer('assets/parallaxforestpack/parallax-mountain-foreground-trees.png', display)
+               ]
 """Камера"""
 camera_scroll = [0, 0]
 
@@ -42,10 +45,9 @@ while not finished:
     # (самый дальний фон статичен, второй немного двигается вместе с персонажем ну и так далее)
 
     player.update(tilemap)
-    background.draw(display, (player.rect().centerx, player.rect().centery))
+    for background in backgrounds:
+        background.draw(display, render_scroll)
     player.draw(camera_offset=render_scroll)
-
-
 
     tilemap.render(display, assets, camera_offset=render_scroll)
 
