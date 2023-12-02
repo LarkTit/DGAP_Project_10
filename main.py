@@ -5,7 +5,8 @@ from util import load_image, load_images, Animation
 
 pygame.init()
 clock = pygame.time.Clock()
-screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+# screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((640, 480))
 
 """
 display - главный экран, на нём происходит рендер в низком разрешении.
@@ -15,7 +16,6 @@ display = pygame.Surface((240 * screen.get_size()[0] // screen.get_size()[1], 24
 
 assets = {
     "grass": load_images("tiles/grass"),
-    "player": load_image("player/idle/idle1.bmp"),
     'player/idle': Animation(load_images('player/idle'), img_dur=6),
     'player/run': Animation(load_images('player/run'), img_dur=5),
     'player/jump_up': Animation(load_images('player/jump_up')),
@@ -23,6 +23,8 @@ assets = {
     'player/jump_down': Animation(load_images('player/jump_down')),
     'player/roll': Animation(load_images('player/roll'), img_dur=6),
     'player/airspin': Animation(load_images('player/airspin'), img_dur=7),
+    'player/climb_low': Animation(load_images('player/climb_low'), img_dur=7),
+    'player/climb_high': Animation(load_images('player/climb_high'), img_dur=7),
     'player/land': Animation(load_images('player/land'), loop=False),
 }
 
