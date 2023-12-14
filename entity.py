@@ -8,11 +8,12 @@ class PhysicsEntity:
     def __init__(self, screen, pos):
         self.pos = list(pos)
         self.screen = screen
-        self.size = (20, 40)
+        self.size = (19, 40)
         self.velocity = [0, 0]
         self.is_moving = 0
         self.air_time = 0
         self.collisions = {'up': False, 'down': False, 'right': False, 'left': False}
+        self.surround = {'up': [], 'down': [], 'right': [], 'left': []}
         self.flip = False
         self.speed = 0
 
@@ -36,6 +37,21 @@ class PhysicsEntity:
     def render(self, screen, camera_offset=(0, 0)):
         screen.blit(pygame.transform.flip(self.animation.img(), self.flip, False),
                     (self.pos[0] - camera_offset[0] + self.anim_offset[0], self.pos[1] - camera_offset[1] + self.anim_offset[1]))
+
+    def check_surroundings(self, tilemap, epsilon):
+        self.surround = {'up': [], 'down': [], 'right': [], 'left': []}
+        surround_rect = self.rect().inflate(epsilon[0], epsilon[1])
+        for rect in tilemap.physics_rects_around(self.pos):
+            if surround_rect.colliderect(rect):
+                if surround_rect.right >= rect.left and surround_rect.centerx < rect.centerx - 8:
+                    self.surround['right'].append(rect)
+                if surround_rect.left <= rect.right and surround_rect.centerx > rect.centerx + 8:
+                    self.surround['left'].append(rect)
+                if surround_rect.top <= rect.bottom and surround_rect.centery > rect.centery:
+                    self.surround['up'].append(rect)
+                if surround_rect.bottom >= rect.top and surround_rect.centery < rect.centery:
+                    self.surround['down'].append(rect)
+        return self.surround
 
     def update(self, tilemap, assets):
         self.collisions = {'up': False, 'down': False, 'right': False, 'left': False}
@@ -70,16 +86,12 @@ class PhysicsEntity:
                     self.velocity[1] = 0
                 self.pos[1] = entity_rect.y
 
-#        if movement[0] > 0:
-#            self.flip = False
-#        if movement[0] < 0:
-#            self.flip = True
-
         self.velocity[1] = min(5, self.velocity[1] + 0.15)
-        if self.velocity[0] < 0:
-            self.velocity[0] = min(0, self.velocity[0] + 0.1)
-        else:
-            self.velocity[0] = max(0, self.velocity[0] - 0.1)
+        if self.collisions['down']:
+            if self.velocity[0] < 0:
+                self.velocity[0] = min(0, self.velocity[0] + 0.1)
+            else:
+                self.velocity[0] = max(0, self.velocity[0] - 0.1)
 
         if self.collisions['down']:
             self.air_time = 0
