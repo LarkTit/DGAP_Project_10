@@ -54,19 +54,23 @@ class Tilemap:
 
     def render(self, surface, assets, camera_offset=(0, 0)):
 
-        for loc in self.tilemap:
-            tile = self.tilemap[loc]
-            if tile['type'] in PHYSICS_TILES:
-                surface.blit(assets[tile['type']][tile['variant']], (tile['pos'][0] *
-                                                                     self.tile_size - camera_offset[0], tile['pos'][1] * self.tile_size - camera_offset[1]))
+        for x in range(camera_offset[0] // self.tile_size, (camera_offset[0] + surface.get_width()) // self.tile_size + 1):
+            for y in range(camera_offset[1] // self.tile_size, (camera_offset[1] + surface.get_height()) // self.tile_size + 1):
+                loc = str(x) + ';' + str(y)
+                if loc in self.tilemap:
+                    tile = self.tilemap[loc]
+                    if tile['type'] in PHYSICS_TILES:
+                        surface.blit(assets[tile['type']][tile['variant']], (tile['pos'][0] * self.tile_size - camera_offset[0], (tile['pos'][1] * self.tile_size - camera_offset[1])))
 
         for tile in self.offgrid_tiles:
             surface.blit()(assets[tile['type']][tile['variant']],
                            (tile['pos'][0] - camera_offset[0], tile['pos'][1] - camera_offset[1]))
 
     def render_bg(self, surface, assets, camera_offset=(0, 0)):
-        for loc in self.tilemap:
-            tile = self.tilemap[loc]
-            if tile['type'] not in PHYSICS_TILES:
-                surface.blit(assets[tile['type']][tile['variant']], (tile['pos'][0] *
-                                                                     self.tile_size - camera_offset[0], tile['pos'][1] * self.tile_size - camera_offset[1]))
+        for x in range(camera_offset[0] // self.tile_size, (camera_offset[0] + surface.get_width()) // self.tile_size + 1):
+            for y in range(camera_offset[1] // self.tile_size, (camera_offset[1] + surface.get_height()) // self.tile_size + 1):
+                loc = str(x) + ';' + str(y)
+                if loc in self.tilemap:
+                    tile = self.tilemap[loc]
+                    if tile['type'] not in PHYSICS_TILES:
+                        surface.blit(assets[tile['type']][tile['variant']], (tile['pos'][0] * self.tile_size - camera_offset[0], (tile['pos'][1] * self.tile_size - camera_offset[1])))
