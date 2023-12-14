@@ -1,7 +1,7 @@
 import pygame
 
 NEIGHBOR_OFFSETS = [(i, j) for i in range(-4, 4) for j in range(-5, 5)]
-PHYSICS_TILES = {"grass"}
+PHYSICS_TILES = {"grass", "blue_stone", "green_stone", "red_stone"}
 
 
 class Tilemap:
@@ -10,19 +10,6 @@ class Tilemap:
         self.tilemap = {}  # блоки фиксированного размера на фиксированной сетке
         self.offgrid_tiles = []  # спрайты, свободно расположенные на карте
         self.screen = screen
-
-        for i in range(100):
-            self.tilemap[str(4+i) + ";10"] = {'type': 'grass', 'variant': 1, "pos": (4+i, 10)}
-
-        for i in range(3):
-            self.tilemap[str(10+i) + ";9"] = {'type': 'grass', 'variant': 1, "pos": (10+i, 9)}
-            self.tilemap[str(13+i) + ";6"] = {'type': 'grass', 'variant': 1, "pos": (13+i, 6)}
-
-        for i in range(3):
-            self.tilemap[str(17+i) + ";3"] = {'type': 'grass', 'variant': 1, "pos": (17+i, 3)}
-
-        for i in range(5):
-            self.tilemap["3;" + str(7+i)] = {'type': 'grass', 'variant': 1, "pos": (3, 7+i)}
 
     """Функция tiles_around находит блоки в радиусе 5 блоков от pos (позиция существа)"""
 
@@ -49,8 +36,16 @@ class Tilemap:
     def render(self, surface, assets, camera_offset=(0, 0)):
         for loc in self.tilemap:
             tile = self.tilemap[loc]
-            surface.blit(assets[tile['type']][tile['variant']], (tile['pos'][0] *
-                                                                 self.tile_size - camera_offset[0], tile['pos'][1] * self.tile_size - camera_offset[1]))
+            if tile['type'] in PHYSICS_TILES:
+                surface.blit(assets[tile['type']][tile['variant']], (tile['pos'][0] *
+                                                                     self.tile_size - camera_offset[0], tile['pos'][1] * self.tile_size - camera_offset[1]))
         for tile in self.offgrid_tiles:
             surface.blit()(assets[tile['type']][tile['variant']],
                            (tile['pos'][0] - camera_offset[0], tile['pos'][1] - camera_offset[1]))
+
+    def render_bg(self, surface, assets, camera_offset=(0, 0)):
+        for loc in self.tilemap:
+            tile = self.tilemap[loc]
+            if tile['type'] not in PHYSICS_TILES:
+                surface.blit(assets[tile['type']][tile['variant']], (tile['pos'][0] *
+                                                                     self.tile_size - camera_offset[0], tile['pos'][1] * self.tile_size - camera_offset[1]))

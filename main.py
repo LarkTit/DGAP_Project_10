@@ -1,12 +1,12 @@
 import pygame
 import tilemap
 from player import Player
-from util import load_image, load_images, Animation
+from util import load_image, load_images, load_map, Animation, TILESET, load_tileset, load_tiles
 
 pygame.init()
 clock = pygame.time.Clock()
-# screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-screen = pygame.display.set_mode((640, 480))
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+# screen = pygame.display.set_mode((640, 480))
 
 """
 display - главный экран, на нём происходит рендер в низком разрешении.
@@ -15,7 +15,13 @@ display - главный экран, на нём происходит ренде
 display = pygame.Surface((240 * screen.get_size()[0] // screen.get_size()[1], 240))
 
 assets = {
-    "grass": load_images("tiles/grass"),
+    "grass": load_tiles("tiles/grass"),
+    "blue_bg": load_tiles("tiles/blue_bg"),
+    "blue_stone": load_tiles("tiles/blue_stone"),
+    "red_bg": load_tiles("tiles/red_bg"),
+    "red_stone": load_tiles("tiles/red_stone"),
+    "green_bg": load_tiles("tiles/green_bg"),
+    "green_stone": load_tiles("tiles/green_stone"),
     'player/idle': Animation(load_images('player/idle'), img_dur=6),
     'player/run': Animation(load_images('player/run'), img_dur=5),
     'player/jump_up': Animation(load_images('player/jump_up')),
@@ -28,7 +34,16 @@ assets = {
     'player/land': Animation(load_images('player/land'), loop=False),
 }
 
+load_tileset('blue_bg')
+load_tileset('blue_stone')
+load_tileset('red_bg')
+load_tileset('red_stone')
+load_tileset('green_bg')
+load_tileset('green_stone')
+
 tilemap = tilemap.Tilemap(display)
+tilemap.tilemap = load_map('tilemap1.csv')
+
 player = Player(display, (80, 50))
 player.set_action(assets, 'idle')
 
@@ -46,6 +61,8 @@ while not finished:
     else:
         camera_scroll[0] += 2
     render_scroll = (int(camera_scroll[0]), int(camera_scroll[1]))
+
+    tilemap.render_bg(display, assets, camera_offset=render_scroll)
 
     # TODO
     # Нужно сделать два-три слоя для заднего фона для параллакса
