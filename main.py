@@ -72,10 +72,10 @@ while not finished:
         camera_scroll[0] += 2
     render_scroll = (int(camera_scroll[0]), int(camera_scroll[1]))
 
-    tilemap.render_bg(display, assets, camera_offset=render_scroll)
-
     for background in backgrounds:
         background.draw(render_scroll)
+
+    tilemap.render_bg(display, assets, camera_offset=render_scroll)
 
     player.update(tilemap, assets)
     player.render(display, camera_offset=render_scroll)
