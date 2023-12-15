@@ -5,7 +5,7 @@ from player import Player
 import entity
 from parallax import BackgroundLayer, MiddleLayer, ForegroundLayer
 from enemy import Skeleton, Bird
-from util import load_image, load_images, load_map, Animation, TILESET, ENEMYPOS, load_tileset, load_tiles
+from util import load_image, load_images, load_map, Animation, TILESET, ENEMYPOS, load_tileset, load_tiles, birds, skeletons, score
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -20,10 +20,6 @@ display = pygame.Surface((240 * screen.get_size()[0] // screen.get_size()[1], 24
 
 heart = pygame.image.load('assets\\heart.bmp').convert_alpha()
 
-score = 0
-birds = []
-skeletons = []
-
 """Место хранения всех картинок и анимаций в виде словаря"""
 
 assets = {
@@ -33,7 +29,6 @@ assets = {
     "red_bg": load_tiles("tiles/red_bg"),
     "red_stone": load_tiles("tiles/red_stone"),
     "green_bg": load_tiles("tiles/green_bg"),
-    "green_stone": load_tiles("tiles/green_stone"),
     "green_stone": load_tiles("tiles/green_stone"),
     'player/attack1': Animation(load_images('player/attack1'), img_dur=5),
     'player/attack2': Animation(load_images('player/attack2'), img_dur=5),
@@ -52,11 +47,11 @@ assets = {
     'skeleton/walk': Animation(load_images('skeleton/walk'), img_dur=6),
     'skeleton/hit': Animation(load_images('skeleton/hit'), img_dur=6),
     'skeleton/attack': Animation(load_images('skeleton/attack'), img_dur=4),
-    'skeleton/death': Animation(load_images('skeleton/death'), img_dur=6),
+    'skeleton/death': Animation(load_images('skeleton/death'), img_dur=8),
 
     'bird/fly': Animation(load_images('bird/fly'), img_dur=6),
     'bird/hit': Animation(load_images('bird/hit'), img_dur=10),
-    'bird/death': Animation(load_images('bird/death'), img_dur=5),
+    'bird/death': Animation(load_images('bird/death'), img_dur=6),
 }
 
 load_tileset('blue_bg')
@@ -134,8 +129,9 @@ while not finished:
         skeleton.hit_check(player, assets)
         skeleton.attack_check(player, assets)
         if skeleton.lives <= 0 and skeleton in skeletons:
-            skeletons.remove(skeleton)
-            score += 1
+            if not skeleton.is_dead:
+                score += 1
+            skeleton.explode(assets)
 
     tilemap.render(display, assets, camera_offset=render_scroll)
 
@@ -145,9 +141,10 @@ while not finished:
         bird.hit_check(player, assets)
         bird.find_player(player)
         bird.attack_check(player, assets)
-        if bird.lives <= 0 and bird in birds:
-            birds.remove(bird)
-            score += 1
+        if bird.lives <= 0:
+            if not bird.is_dead:
+                score += 1
+            bird.explode(assets)
     # for rect in tilemap.physics_rects_around(player.pos):
     #     pygame.draw.rect(display, (0, 0, 0), rect.move(-render_scroll[0], -render_scroll[1]))
 

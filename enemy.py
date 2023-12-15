@@ -1,4 +1,5 @@
 import pygame
+from util import birds, skeletons, score
 from entity import PhysicsEntity
 
 
@@ -19,14 +20,15 @@ class Skeleton(PhysicsEntity):
         self.is_hit = 0
         self.lives = 3
         self.immune = False
+        self.fade_time = 0
 
     def update(self, tilemap, assets, player):
         super().update(tilemap, assets)
-        if self.is_moving and not self.is_attacking:
+        if self.is_moving and not self.is_attacking and self.lives > 0:
             self.flip = self.is_moving - 1
             if self.collisions['down']:
                 self.set_action(assets, 'walk')
-        elif self.collisions['down'] and not self.is_attacking:
+        elif self.collisions['down'] and not self.is_attacking and self.lives > 0:
             self.set_action(assets, 'idle')
 
         if self.is_attacking:
@@ -47,13 +49,13 @@ class Skeleton(PhysicsEntity):
 
         if self.is_hit:
             self.is_hit += 1
-            if self.is_hit > 23:
+            if self.is_hit > 23 and self.lives > 0:
                 self.immune = False
                 self.is_hit = 0
                 self.set_action(assets, "idle")
 
     def attack(self, assets):
-        if not self.is_attacking and not self.attack_delay:
+        if not self.is_attacking and not self.attack_delay and self.lives > 0:
             self.attack_delay = 0
             self.is_attacking = True
             self.speed = 0
@@ -64,7 +66,7 @@ class Skeleton(PhysicsEntity):
         if self.reaction_time >= 27:
             self.reaction_time = 0
             surround_rect = pygame.Rect(self.pos[0] - 150, -150 + self.pos[1] + self.size[1], self.pos[0] + self.size[0] + 250, 150)
-            if surround_rect.colliderect(player.rect()):
+            if surround_rect.colliderect(player.rect()) and self.lives > 0:
                 if self.pos[0] > player.pos[0]:
                     self.is_moving = -1
                 if self.pos[0] < player.pos[0]:
@@ -89,10 +91,19 @@ class Skeleton(PhysicsEntity):
         return pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1]).move(15 + 15*self.flip, 0)
 
     def attack_check(self, player, assets):
-        if not player.immune and self.is_damaging and self.attack_rect().colliderect(player.rect()):
+        if not player.immune and self.is_damaging and self.attack_rect().colliderect(player.rect()) and self.lives > 0:
             player.is_hit = 1
             player.immune = True
             player.lives -= 1
+
+    def explode(self, assets):
+        self.set_action(assets, 'death')
+        self.is_moving = 0
+        self.is_dead = True
+        if self.fade_time >= 50:
+            if self in skeletons:
+                skeletons.remove(self)
+        self.fade_time += 1
 
 
 class Bird(PhysicsEntity):
@@ -112,11 +123,12 @@ class Bird(PhysicsEntity):
         self.lives = 1
         self.is_hit = 0
         self.immune = False
+        self.fade_time = 0
 
     def update(self, tilemap, assets, player):
         self.collisions = {'up': False, 'down': False, 'right': False, 'left': False}
 
-        if self.aggressive:
+        if self.aggressive and self.lives > 0:
             self.pos[0] += (-self.pos[0] + player.pos[0])/55
             self.pos[1] += (-self.pos[1] + player.pos[1])/55
 
@@ -150,7 +162,15 @@ class Bird(PhysicsEntity):
             self.set_action(assets, 'hit')
 
     def attack_check(self, player, assets):
-        if not player.immune and self.rect().colliderect(player.rect()):
+        if not player.immune and self.rect().colliderect(player.rect()) and self.lives > 0:
             player.is_hit = 1
             player.immune = True
             player.lives -= 1
+
+    def explode(self, assets):
+        self.set_action(assets, 'death')
+        self.is_dead = True
+        if self.fade_time >= 20:
+            if self in birds:
+                birds.remove(self)
+        self.fade_time += 1

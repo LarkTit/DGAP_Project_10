@@ -18,6 +18,7 @@ class PhysicsEntity:
         self.speed = 0
         self.is_attacking = False
         self.attack_time = 0
+        self.is_dead = False
 
         self.type = ''
         self.action = ''

@@ -3,27 +3,41 @@ import os
 
 TILESET = {}
 ENEMYPOS = []
+birds = []
+skeletons = []
+score = 0
 
 """Загружает изображение по указанному пути и возвращает его в формате pygame.Surface."""
+
+
 def load_image(path):
     img = pygame.image.load("assets/" + path).convert_alpha()
     return img
 
+
 """Загружает все изображения по указанному пути и вовзвращает их в виде списка pygame.Surface"""
+
+
 def load_images(path):
     images = []
     for img_name in sorted(os.listdir("assets/" + path)):
         images.append(load_image(path + '/' + img_name))
     return images
 
+
 """Загружает тайлы по указанному пути и возвращает их в виде словаря, где ключи - номер файла, а значения - изображения в нужном формате."""
+
+
 def load_tiles(path):
     images = {}
     for img_name in sorted(os.listdir("assets/" + path)):
         images[int(img_name[:-4])] = load_image(path + '/' + img_name)
     return images
 
+
 """загружает тайлы, содержащиеся в указанной директории, и добавляет их в словарь TILESET, где ключами являются номера тайлов, а значениями - пути к соответствующим изображениям."""
+
+
 def load_tileset(path):
     with open(path) as file:
         file.readline(3)
@@ -43,8 +57,11 @@ def load_tileset(path):
         img_name = img_name[:-4]
         TILESET[img_name] = path
 
+
 """ Загрузка карты игрового уровня по указанному пути и возвращает ее в виде словаря, где ключами являются координаты тайлов, а значениями - информация о типе, варианте и позиции тайлов.
 """
+
+
 def load_map(path):
     y = 0
     x = 0
@@ -66,7 +83,10 @@ def load_map(path):
     file.close()
     return tilemap
 
+
 """ Анимация изображений. Содержит методы при инициализации, обновления и получения текущего изображения анимации."""
+
+
 class Animation:
     def __init__(self, images, img_dur=6, loop=True):
         self.images = images
