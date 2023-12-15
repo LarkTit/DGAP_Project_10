@@ -24,28 +24,31 @@ class PhysicsEntity:
         self.animation = 0
         self.anim_offset = (-3, -3)
 
-"""Возвращает прямоугольник сущности"""
+    """Возвращает прямоугольник сущности"""
+
     def rect(self):
         return pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
 
-""""Проверяет есть ли у сущности анимация и устанавливает ее"""
+    """"Проверяет есть ли у сущности анимация и устанавливает ее"""
+
     def set_action(self, assets, action):
         if action != self.action or not self.animation:
             self.action = action
             self.animation = assets[self.type + '/' + self.action].copy()
 
-"""Вывод прямоугольника сущности на экран"""
+    """Вывод прямоугольника сущности на экран"""
+
     def draw(self, camera_offset=(0, 0)):
         pygame.draw.rect(self.screen, (0, 0, 0), pygame.Rect(
             self.pos[0] - camera_offset[0], self.pos[1] - camera_offset[1], self.size[0], self.size[1]))
 
-"""Анимирует сущность на экране"""
+    """Анимирует сущность на экране"""
 
     def render(self, screen, camera_offset=(0, 0)):
         screen.blit(pygame.transform.flip(self.animation.img(), self.flip, False),
                     (self.pos[0] - camera_offset[0] + self.anim_offset[0], self.pos[1] - camera_offset[1] + self.anim_offset[1]))
 
-"""Проверяет окружение сущности на наличие стен"""
+    """Проверяет окружение сущности на наличие стен"""
 
     def check_surroundings(self, tilemap, epsilon):
         self.surround = {'up': [], 'down': [], 'right': [], 'left': []}
@@ -62,7 +65,8 @@ class PhysicsEntity:
                     self.surround['down'].append(rect)
         return self.surround
 
-"""Обновляется позиция сущности на экране. Проверяется происходит ли столкновение со стенкой, если оно произошло, то позиция не меняется."""
+    """Обновляется позиция сущности на экране. Проверяется происходит ли столкновение со стенкой, если оно произошло, то позиция не меняется."""
+
     def update(self, tilemap, assets):
         self.collisions = {'up': False, 'down': False, 'right': False, 'left': False}
 
