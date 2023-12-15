@@ -2,6 +2,7 @@ import pygame
 import os
 
 TILESET = {}
+ENEMYPOS = []
 
 
 def load_image(path):
@@ -55,8 +56,10 @@ def load_map(path):
             if not tiles_id or tiles_id[0] == '':
                 break
             for tile_id in tiles_id:
-                tile_id = str(int(tile_id) + 1)
                 x += 1
+                if tile_id == '0':
+                    ENEMYPOS.append((x*16, y*16))
+                tile_id = str(int(tile_id) + 1)
                 if tile_id in TILESET:
                     tilemap[str(x)+';'+str(y)] = {'type': TILESET[tile_id], 'variant': int(tile_id), "pos": (x, y)}
     file.close()

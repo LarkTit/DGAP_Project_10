@@ -61,6 +61,7 @@ class Player(PhysicsEntity):
                 self.set_action(assets, 'airspin')
             if self.roll_time >= 43:
                 self.is_rolling = False
+                self.immune = False
                 self.no_interrupt = False
                 self.roll_time = 0
                 self.speed = 3
@@ -113,6 +114,7 @@ class Player(PhysicsEntity):
     def jump(self):
         if self.is_rolling:
             self.is_rolling = False
+            self.immune = False
             self.no_interrupt = False
             self.speed = 3
             self.roll_time = 0
@@ -145,8 +147,9 @@ class Player(PhysicsEntity):
     def roll(self, assets):
         if self.roll_delay == 0 and not self.no_interrupt:
             self.is_rolling = True
+            self.immune = True
             self.no_interrupt = True
-            self.roll_delay = 90
+            self.roll_delay = 50
             if self.collisions["down"]:
                 self.speed = 1
                 self.set_action(assets, 'roll')

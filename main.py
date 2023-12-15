@@ -1,10 +1,11 @@
 import pygame
 import tilemap
+from random import choice
 from player import Player
 import entity
 from parallax import BackgroundLayer, MiddleLayer, ForegroundLayer
 from enemy import Skeleton, Bird
-from util import load_image, load_images, load_map, Animation, TILESET, load_tileset, load_tiles
+from util import load_image, load_images, load_map, Animation, TILESET, ENEMYPOS, load_tileset, load_tiles
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -19,6 +20,9 @@ display = pygame.Surface((240 * screen.get_size()[0] // screen.get_size()[1], 24
 
 heart = pygame.image.load('assets\\heart.bmp').convert_alpha()
 
+score = 0
+birds = []
+skeletons = []
 assets = {
     "grass": load_tiles("tiles/grass"),
     "blue_bg": load_tiles("tiles/blue_bg"),
@@ -60,7 +64,16 @@ load_tileset('green_bg')
 load_tileset('green_stone')
 
 tilemap = tilemap.Tilemap(display)
-tilemap.tilemap = load_map('tilemap1.csv')
+tilemap.tilemap = load_map('tilemap0.csv')
+
+for pos in ENEMYPOS:
+    rand = choice((1, 2))
+    if rand == 1:
+        skeletons.append(Skeleton(display, pos))
+        skeletons[-1].set_action(assets, 'idle')
+    else:
+        birds.append(Bird(display, pos))
+        birds[-1].set_action(assets, 'fly')
 
 player = Player(display, (80, 50))
 player.set_action(assets, 'idle')
@@ -68,14 +81,8 @@ player.set_action(assets, 'idle')
 
 backgrounds = [BackgroundLayer('assets/parallaxforestpack/parallax-mountain-bg.png', display),
                MiddleLayer('assets/parallaxforestpack/parallax-mountain-mountains.png', display),
-               ForegroundLayer('assets/parallaxforestpack/parallax-mountain-foreground-trees.png', display, move_y_axis=True, y_position=15)
+               ForegroundLayer('assets/parallaxforestpack/parallax-mountain-foreground-trees.png', display, move_y_axis=True, y_position=50)
                ]
-
-skeleton = Skeleton(display, (180, 50))
-skeleton.set_action(assets, 'idle')
-
-bird = Bird(display, (180, 50))
-bird.set_action(assets, 'fly')
 
 """текст"""
 pygame.font.init()
@@ -107,18 +114,28 @@ while not finished:
     player.update(tilemap, assets)
     player.render(display, camera_offset=render_scroll)
 
-    skeleton.update(tilemap, assets, player)
-    skeleton.render(display, camera_offset=render_scroll)
-    skeleton.find_player(player)
-    skeleton.attack_area(player, assets)
-    skeleton.hit_check(player, assets)
-    skeleton.attack_check(player, assets)
+    for skeleton in skeletons:
+        skeleton.update(tilemap, assets, player)
+        skeleton.render(display, camera_offset=render_scroll)
+        skeleton.find_player(player)
+        skeleton.attack_area(player, assets)
+        skeleton.hit_check(player, assets)
+        skeleton.attack_check(player, assets)
+        if skeleton.lives <= 0 and skeleton in skeletons:
+            skeletons.remove(skeleton)
+            score += 1
+
     tilemap.render(display, assets, camera_offset=render_scroll)
 
-    #bird.update(tilemap, assets, player)
-    #bird.render(display, camera_offset=render_scroll)
-    #bird.hit_check(player, assets)
-    # bird.find_player(player)
+    for bird in birds:
+        bird.update(tilemap, assets, player)
+        bird.render(display, camera_offset=render_scroll)
+        bird.hit_check(player, assets)
+        bird.find_player(player)
+        bird.attack_check(player, assets)
+        if bird.lives <= 0 and bird in birds:
+            birds.remove(bird)
+            score += 1
     # for rect in tilemap.physics_rects_around(player.pos):
     #     pygame.draw.rect(display, (0, 0, 0), rect.move(-render_scroll[0], -render_scroll[1]))
 
@@ -149,6 +166,9 @@ while not finished:
     for i in range(player.lives):
         display.blit(heart, (display.get_width() - 80 + 9*i, 12))
 
+    text = "SCORE: " + str(score)
+    img = font.render(text, True, (255, 255, 255))
+
     if player.lives <= 0:
         gameover_text = big_font.render("GAME OVER", True, (255, 255, 255))
         screen.fill((0, 0, 0))
@@ -159,6 +179,7 @@ while not finished:
         finished = True
 
     screen.blit(pygame.transform.scale(display, screen.get_size()), (0, 0))
+    screen.blit(img, (screen.get_width() - 210, 95))
     pygame.display.update()
     clock.tick(60)
 

@@ -17,7 +17,7 @@ class Skeleton(PhysicsEntity):
         self.reaction_time = 0
         self.attack_reaction = 0
         self.is_hit = 0
-        self.lives = 4
+        self.lives = 3
         self.immune = False
 
     def update(self, tilemap, assets, player):
