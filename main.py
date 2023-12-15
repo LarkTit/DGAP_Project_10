@@ -16,6 +16,8 @@ display - главный экран, на нём происходит ренде
 """
 display = pygame.Surface((240 * screen.get_size()[0] // screen.get_size()[1], 240))
 
+"""Место хранения всех картинок и анимаций в виде словаря"""
+
 assets = {
     "grass": load_tiles("tiles/grass"),
     "blue_bg": load_tiles("tiles/blue_bg"),
@@ -43,24 +45,35 @@ load_tileset('red_stone')
 load_tileset('green_bg')
 load_tileset('green_stone')
 
+"""Инициализация объекта, отображающего игровой уровень."""
+
 tilemap = tilemap.Tilemap(display)
+
+"""Загрузка тайлмапа из файла"""
+
 tilemap.tilemap = load_map('tilemap1.csv')
 
+"""Создание объекта игрока с начальной позицией (80,50)."""
+
 player = Player(display, (80, 50))
+
+""" Установка начального действия на игрока"""
+
 player.set_action(assets, 'idle')
+
+"""Список картинок и ссылок к ним для параллакса."""
 
 backgrounds = [BackgroundLayer('assets/parallaxforestpack/parallax-mountain-bg.png', display),
                MiddleLayer('assets/parallaxforestpack/parallax-mountain-mountains.png', display),
                ForegroundLayer('assets/parallaxforestpack/parallax-mountain-foreground-trees.png', display, move_y_axis=True, y_position=15)
                ]
 
-"""Камера"""
+"""Инициализация переменной, отвечающей за прокрутку камеры по горизонтали и вертикали"""
 camera_scroll = [0, 0]
-
-"""Частицы"""
 
 
 finished = False
+""""Запуск игрового цикла. Обновления отображения, прокрутка камеры. Отображение всех изменений и управление частотой с помощью clock.tick(60)"""
 while not finished:
     display.fill((112, 255, 255))
 
@@ -109,5 +122,7 @@ while not finished:
     screen.blit(pygame.transform.scale(display, screen.get_size()), (0, 0))
     pygame.display.update()
     clock.tick(60)
+
+""""Очистка Pygame и выход из игры при завершении игрового цикла."""
 
 pygame.quit()

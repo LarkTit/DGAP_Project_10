@@ -4,15 +4,18 @@ NEIGHBOR_OFFSETS = [(i, j) for i in range(-4, 4) for j in range(-5, 5)]
 PHYSICS_TILES = {"grass", "blue_stone", "green_stone", "red_stone"}
 
 
+"""Класс представляет собой карту игрового мира состоящую из тайлов. Каждый тайл имеет тип и вариант."""
 class Tilemap:
+
+    """Инициализирует карту с указанным размером блока и экраном на котором она будет отображаться"""
     def __init__(self, screen, tile_size=16):
         self.tile_size = tile_size
         self.tilemap = {}  # блоки фиксированного размера на фиксированной сетке
         self.offgrid_tiles = []  # спрайты, свободно расположенные на карте
         self.screen = screen
 
-    """Функция tiles_around находит блоки в радиусе 5 блоков от pos (позиция существа)"""
 
+    """Извлекает тайлы с заданными типами и возвращает их в виде списка. Параметр определяет оставить их на карте или же удалить"""
     def extract(self, id_pairs, keep=False):
         matches = []
         for tile in self.offgrid_tiles.copy():
@@ -32,6 +35,7 @@ class Tilemap:
                 del self.tilemap[loc]
         return matches
 
+    """Функция tiles_around находит блоки в радиусе 5 блоков от pos (позиция существа)"""
     def tiles_around(self, pos):
         tiles = []
         tile_loc = (int(pos[0] // self.tile_size), int(pos[1] // self.tile_size))
@@ -52,6 +56,7 @@ class Tilemap:
                     tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size, self.tile_size, self.tile_size))
         return rects
 
+    """Отрисовывает тайлы и свободно расположенные спрайты на указанной поверхности с учетом смещения камеры."""
     def render(self, surface, assets, camera_offset=(0, 0)):
 
         for loc in self.tilemap:
@@ -64,6 +69,7 @@ class Tilemap:
             surface.blit()(assets[tile['type']][tile['variant']],
                            (tile['pos'][0] - camera_offset[0], tile['pos'][1] - camera_offset[1]))
 
+    """Отрисовывает задний фон тайлов на указанной поверхности с учетом смещения камеры."""
     def render_bg(self, surface, assets, camera_offset=(0, 0)):
         for loc in self.tilemap:
             tile = self.tilemap[loc]
