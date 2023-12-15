@@ -24,6 +24,12 @@ class Player(PhysicsEntity):
         self.attack_type = 0
         self.attack_window = 0
         self.attack_buffer = 0
+        self.lives = 7
+        self.is_hit = 0
+        self.immune = False
+
+    def attack_rect(self):
+        return pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1]).inflate(37, 0).move(15 + 6*self.flip, 0)
 
     def update(self, tilemap, assets):
         super().update(tilemap, assets)
@@ -36,8 +42,6 @@ class Player(PhysicsEntity):
 
         if self.collisions["down"]:
             self.jumps = 2
-            if self.fall_time > 30:
-                self.set_action(assets, 'land')
             self.fall_time = 0
 
         if not self.collisions["down"] and not self.no_interrupt:
@@ -99,6 +103,13 @@ class Player(PhysicsEntity):
             self.attack(assets)
             self.attack_buffer = 0
 
+        if self.is_hit:
+            self.is_hit += 1
+            if self.is_hit > 27:
+                self.immune = False
+                self.is_hit = 0
+                self.set_action(assets, "idle")
+
     def jump(self):
         if self.is_rolling:
             self.is_rolling = False
@@ -117,7 +128,7 @@ class Player(PhysicsEntity):
             self.jumps = 0
 
     def attack(self, assets):
-        if not self.is_attacking:
+        if not self.is_attacking and not self.no_interrupt:
             self.is_attacking = True
             self.no_interrupt = True
             self.anim_offset = (-20, -17)

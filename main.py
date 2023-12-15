@@ -17,6 +17,8 @@ display - главный экран, на нём происходит ренде
 """
 display = pygame.Surface((240 * screen.get_size()[0] // screen.get_size()[1], 240))
 
+heart = pygame.image.load('assets\\heart.bmp').convert_alpha()
+
 assets = {
     "grass": load_tiles("tiles/grass"),
     "blue_bg": load_tiles("tiles/blue_bg"),
@@ -37,7 +39,7 @@ assets = {
     'player/airspin': Animation(load_images('player/airspin'), img_dur=7),
     'player/climb_low': Animation(load_images('player/climb_low'), img_dur=7),
     'player/climb_high': Animation(load_images('player/climb_high'), img_dur=7),
-    'player/land': Animation(load_images('player/land'), loop=False),
+    'player/hit': Animation(load_images('player/hit'), img_dur=7),
 
     'skeleton/idle': Animation(load_images('skeleton/idle'), img_dur=14),
     'skeleton/walk': Animation(load_images('skeleton/walk'), img_dur=6),
@@ -46,8 +48,8 @@ assets = {
     'skeleton/death': Animation(load_images('skeleton/death'), img_dur=6),
 
     'bird/fly': Animation(load_images('bird/fly'), img_dur=6),
-    'bird/hit': Animation(load_images('bird/fly'), img_dur=10),
-    'bird/death': Animation(load_images('bird/fly'), img_dur=5),
+    'bird/hit': Animation(load_images('bird/hit'), img_dur=10),
+    'bird/death': Animation(load_images('bird/death'), img_dur=5),
 }
 
 load_tileset('blue_bg')
@@ -58,9 +60,9 @@ load_tileset('green_bg')
 load_tileset('green_stone')
 
 tilemap = tilemap.Tilemap(display)
-tilemap.tilemap = load_map('maplevel2.csv')
+tilemap.tilemap = load_map('tilemap1.csv')
 
-player = Player(display, (110, 1400))
+player = Player(display, (80, 50))
 player.set_action(assets, 'idle')
 
 
@@ -75,17 +77,20 @@ skeleton.set_action(assets, 'idle')
 bird = Bird(display, (180, 50))
 bird.set_action(assets, 'fly')
 
+"""текст"""
+pygame.font.init()
+text = "SCORE: 0"
+font = pygame.font.SysFont(None, 48)
+small_font = pygame.font.SysFont(None, 24)
+big_font = pygame.font.SysFont(None, 120)
+
 
 """Камера"""
 camera_scroll = [0, 0]
 
-"""Частицы"""
-
 
 finished = False
 while not finished:
-    display.fill((112, 255, 255))
-
     camera_scroll[0] += (player.rect().centerx - display.get_width() // 2 - camera_scroll[0] + 15) / 20
     camera_scroll[1] += (player.rect().centery - display.get_height() // 2 - camera_scroll[1]) / 15
     if player.flip:
@@ -106,12 +111,14 @@ while not finished:
     skeleton.render(display, camera_offset=render_scroll)
     skeleton.find_player(player)
     skeleton.attack_area(player, assets)
-
+    skeleton.hit_check(player, assets)
+    skeleton.attack_check(player, assets)
     tilemap.render(display, assets, camera_offset=render_scroll)
 
-    bird.update(tilemap, assets, player)
-    bird.render(display, camera_offset=render_scroll)
-    bird.find_player(player)
+    #bird.update(tilemap, assets, player)
+    #bird.render(display, camera_offset=render_scroll)
+    #bird.hit_check(player, assets)
+    # bird.find_player(player)
     # for rect in tilemap.physics_rects_around(player.pos):
     #     pygame.draw.rect(display, (0, 0, 0), rect.move(-render_scroll[0], -render_scroll[1]))
 
@@ -138,6 +145,18 @@ while not finished:
             if event.key == pygame.K_a:
                 player.is_moving += 1
                 # player.velocity[0] += 3
+
+    for i in range(player.lives):
+        display.blit(heart, (display.get_width() - 80 + 9*i, 12))
+
+    if player.lives <= 0:
+        gameover_text = big_font.render("GAME OVER", True, (255, 255, 255))
+        screen.fill((0, 0, 0))
+        screen.blit(gameover_text, (screen.get_width() // 2 - 80, screen.get_height() // 2 + 10))
+
+        pygame.display.update()
+        pygame.time.delay(4000)
+        finished = True
 
     screen.blit(pygame.transform.scale(display, screen.get_size()), (0, 0))
     pygame.display.update()
