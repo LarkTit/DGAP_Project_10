@@ -1,7 +1,7 @@
 import pygame
 from entity import PhysicsEntity
 
-
+"""Класс главного человечка(главного персонажа)"""
 class Player(PhysicsEntity):
     def __init__(self, screen, pos):
         super().__init__(screen, pos)
@@ -31,6 +31,7 @@ class Player(PhysicsEntity):
     def attack_rect(self):
         return pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1]).inflate(37, 0).move(15 + 6*self.flip, 0)
 
+    """Обновление положения персонажа"""
     def update(self, tilemap, assets):
         super().update(tilemap, assets)
         if self.is_moving and not self.no_interrupt:
@@ -111,6 +112,7 @@ class Player(PhysicsEntity):
                 self.is_hit = 0
                 self.set_action(assets, "idle")
 
+    """Прыжок персонажа"""
     def jump(self):
         if self.is_rolling:
             self.is_rolling = False
@@ -144,6 +146,7 @@ class Player(PhysicsEntity):
         else:
             self.attack_buffer = 1
 
+    """Кувырок"""
     def roll(self, assets):
         if self.roll_delay == 0 and not self.no_interrupt:
             self.is_rolling = True
@@ -165,6 +168,7 @@ class Player(PhysicsEntity):
                 else:
                     self.velocity[0] = 2.5
 
+    """Проверка, может ли персонаж забраться """
     def climb_update(self, assets, tilemap, direction, flip):
         if len(self.check_surroundings(tilemap, (10, 35))["up"]) < 3 and not self.check_surroundings(tilemap, (-17, 40))["down"] and 0 < len(self.check_surroundings(tilemap, (5, 5))[direction]) <= 2 and self.collisions[direction]:
             tiles = sorted(self.check_surroundings(tilemap, (5, 5))[direction], key=lambda x: x.bottom)
@@ -177,6 +181,7 @@ class Player(PhysicsEntity):
                     self.climb_type = 'high'
             self.climb(assets, flip)
 
+    """Поднимает человечка после проверки на climb_update"""
     def climb(self, assets, flip):
         self.is_climbing = True
         self.no_interrupt = True

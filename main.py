@@ -23,6 +23,9 @@ heart = pygame.image.load('assets\\heart.bmp').convert_alpha()
 score = 0
 birds = []
 skeletons = []
+
+"""Место хранения всех картинок и анимаций в виде словаря"""
+
 assets = {
     "grass": load_tiles("tiles/grass"),
     "blue_bg": load_tiles("tiles/blue_bg"),
@@ -63,6 +66,8 @@ load_tileset('red_stone')
 load_tileset('green_bg')
 load_tileset('green_stone')
 
+"""Инициализация объекта, отображающего игровой уровень."""
+
 tilemap = tilemap.Tilemap(display)
 tilemap.tilemap = load_map('tilemap0.csv')
 
@@ -75,9 +80,15 @@ for pos in ENEMYPOS:
         birds.append(Bird(display, pos))
         birds[-1].set_action(assets, 'fly')
 
+"""Создание объекта игрока с начальной позицией (80,50)."""
+
 player = Player(display, (80, 50))
+
+""" Установка начального действия на игрока"""
+
 player.set_action(assets, 'idle')
 
+"""Список картинок и ссылок к ним для параллакса."""
 
 backgrounds = [BackgroundLayer('assets/parallaxforestpack/parallax-mountain-bg.png', display),
                MiddleLayer('assets/parallaxforestpack/parallax-mountain-mountains.png', display),
@@ -92,11 +103,12 @@ small_font = pygame.font.SysFont(None, 24)
 big_font = pygame.font.SysFont(None, 120)
 
 
-"""Камера"""
+"""Инициализация переменной, отвечающей за прокрутку камеры по горизонтали и вертикали"""
 camera_scroll = [0, 0]
 
 
 finished = False
+""""Запуск игрового цикла. Обновления отображения, прокрутка камеры. Отображение всех изменений и управление частотой с помощью clock.tick(60)"""
 while not finished:
     camera_scroll[0] += (player.rect().centerx - display.get_width() // 2 - camera_scroll[0] + 15) / 20
     camera_scroll[1] += (player.rect().centery - display.get_height() // 2 - camera_scroll[1]) / 15
@@ -182,5 +194,7 @@ while not finished:
     screen.blit(img, (screen.get_width() - 210, 95))
     pygame.display.update()
     clock.tick(60)
+
+""""Очистка Pygame и выход из игры при завершении игрового цикла."""
 
 pygame.quit()
