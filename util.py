@@ -56,10 +56,8 @@ def load_map(path):
                 break
             for tile_id in tiles_id:
                 tile_id = str(int(tile_id) + 1)
-                print(x, y, tile_id)
                 x += 1
                 if tile_id in TILESET:
-                    print('YES', TILESET[tile_id])
                     tilemap[str(x)+';'+str(y)] = {'type': TILESET[tile_id], 'variant': int(tile_id), "pos": (x, y)}
     file.close()
     return tilemap

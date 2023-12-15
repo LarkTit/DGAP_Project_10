@@ -3,6 +3,7 @@ import tilemap
 from player import Player
 import entity
 from parallax import BackgroundLayer, MiddleLayer, ForegroundLayer
+from enemy import Skeleton, Bird
 from util import load_image, load_images, load_map, Animation, TILESET, load_tileset, load_tiles
 
 pygame.init()
@@ -34,6 +35,16 @@ assets = {
     'player/climb_low': Animation(load_images('player/climb_low'), img_dur=7),
     'player/climb_high': Animation(load_images('player/climb_high'), img_dur=7),
     'player/land': Animation(load_images('player/land'), loop=False),
+
+    'skeleton/idle': Animation(load_images('skeleton/idle'), img_dur=14),
+    'skeleton/walk': Animation(load_images('skeleton/walk'), img_dur=6),
+    'skeleton/hit': Animation(load_images('skeleton/hit'), img_dur=6),
+    'skeleton/attack': Animation(load_images('skeleton/attack'), img_dur=4),
+    'skeleton/death': Animation(load_images('skeleton/death'), img_dur=6),
+
+    'bird/fly': Animation(load_images('bird/fly'), img_dur=6),
+    'bird/hit': Animation(load_images('bird/fly'), img_dur=10),
+    'bird/death': Animation(load_images('bird/fly'), img_dur=5),
 }
 
 load_tileset('blue_bg')
@@ -49,10 +60,18 @@ tilemap.tilemap = load_map('tilemap1.csv')
 player = Player(display, (80, 50))
 player.set_action(assets, 'idle')
 
+
 backgrounds = [BackgroundLayer('assets/parallaxforestpack/parallax-mountain-bg.png', display),
                MiddleLayer('assets/parallaxforestpack/parallax-mountain-mountains.png', display),
                ForegroundLayer('assets/parallaxforestpack/parallax-mountain-foreground-trees.png', display, move_y_axis=True, y_position=15)
                ]
+
+skeleton = Skeleton(display, (180, 50))
+skeleton.set_action(assets, 'idle')
+
+bird = Bird(display, (180, 50))
+bird.set_action(assets, 'fly')
+
 
 """Камера"""
 camera_scroll = [0, 0]
@@ -80,7 +99,16 @@ while not finished:
     player.update(tilemap, assets)
     player.render(display, camera_offset=render_scroll)
 
+    skeleton.update(tilemap, assets, player)
+    skeleton.render(display, camera_offset=render_scroll)
+    skeleton.find_player(player)
+    skeleton.attack_area(player, assets)
+
     tilemap.render(display, assets, camera_offset=render_scroll)
+
+    bird.update(tilemap, assets, player)
+    bird.render(display, camera_offset=render_scroll)
+    bird.find_player(player)
     # for rect in tilemap.physics_rects_around(player.pos):
     #     pygame.draw.rect(display, (0, 0, 0), rect.move(-render_scroll[0], -render_scroll[1]))
 
