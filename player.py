@@ -21,6 +21,9 @@ class Player(PhysicsEntity):
         self.no_interrupt = False
         self.climb_done = True
         self.climb_type = ''
+        self.attack_type = 0
+        self.attack_window = 0
+        self.attack_buffer = 0
 
     def update(self, tilemap, assets):
         super().update(tilemap, assets)
@@ -75,6 +78,27 @@ class Player(PhysicsEntity):
             self.speed = 3
             self.climb_done = True
 
+        if self.is_attacking:
+            if self.attack_time > 20:
+                self.attack_time = 0
+                self.is_attacking = False
+                self.no_interrupt = False
+                self.speed = 3
+                self.attack_window = 1
+                self.set_action(assets, 'idle')
+                self.anim_offset = (-15, -8)
+            self.attack_time += 1
+
+        if self.attack_window and self.attack_type:
+            if self.attack_window > 26:
+                self.attack_type = 0
+                self.attack_window = 0
+            self.attack_window += 1
+
+        if not self.is_attacking and self.attack_buffer > 0:
+            self.attack(assets)
+            self.attack_buffer = 0
+
     def jump(self):
         if self.is_rolling:
             self.is_rolling = False
@@ -91,6 +115,21 @@ class Player(PhysicsEntity):
         elif self.jumps == 2:
             self.velocity[1] = -3
             self.jumps = 0
+
+    def attack(self, assets):
+        if not self.is_attacking:
+            self.is_attacking = True
+            self.no_interrupt = True
+            self.anim_offset = (-20, -17)
+            self.speed = 0.7
+            if self.attack_type == 0:
+                self.set_action(assets, 'attack1')
+                self.attack_type = 1
+            else:
+                self.set_action(assets, 'attack2')
+                self.attack_type = 0
+        else:
+            self.attack_buffer = 1
 
     def roll(self, assets):
         if self.roll_delay == 0 and not self.no_interrupt:
@@ -113,7 +152,7 @@ class Player(PhysicsEntity):
                     self.velocity[0] = 2.5
 
     def climb_update(self, assets, tilemap, direction, flip):
-        if len(self.check_surroundings(tilemap, (10, 70))["up"]) < 3 and not self.check_surroundings(tilemap, (-17, 40))["down"] and 0 < len(self.check_surroundings(tilemap, (5, 5))[direction]) <= 2 and self.collisions[direction]:
+        if len(self.check_surroundings(tilemap, (10, 35))["up"]) < 3 and not self.check_surroundings(tilemap, (-17, 40))["down"] and 0 < len(self.check_surroundings(tilemap, (5, 5))[direction]) <= 2 and self.collisions[direction]:
             tiles = sorted(self.check_surroundings(tilemap, (5, 5))[direction], key=lambda x: x.bottom)
             if self.climb_done:
                 if tiles[0].bottom > self.rect().bottom:

@@ -24,6 +24,9 @@ assets = {
     "red_stone": load_tiles("tiles/red_stone"),
     "green_bg": load_tiles("tiles/green_bg"),
     "green_stone": load_tiles("tiles/green_stone"),
+    "green_stone": load_tiles("tiles/green_stone"),
+    'player/attack1': Animation(load_images('player/attack1'), img_dur=5),
+    'player/attack2': Animation(load_images('player/attack2'), img_dur=5),
     'player/idle': Animation(load_images('player/idle'), img_dur=6),
     'player/run': Animation(load_images('player/run'), img_dur=5),
     'player/jump_up': Animation(load_images('player/jump_up')),
@@ -44,9 +47,9 @@ load_tileset('green_bg')
 load_tileset('green_stone')
 
 tilemap = tilemap.Tilemap(display)
-tilemap.tilemap = load_map('tilemap1.csv')
+tilemap.tilemap = load_map('maplevel2.csv')
 
-player = Player(display, (80, 50))
+player = Player(display, (110, 1400))
 player.set_action(assets, 'idle')
 
 backgrounds = [BackgroundLayer('assets/parallaxforestpack/parallax-mountain-bg.png', display),
@@ -87,6 +90,8 @@ while not finished:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            player.attack(assets)
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_d:
                 # player.velocity[0] += 3

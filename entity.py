@@ -16,6 +16,8 @@ class PhysicsEntity:
         self.surround = {'up': [], 'down': [], 'right': [], 'left': []}
         self.flip = False
         self.speed = 0
+        self.is_attacking = False
+        self.attack_time = 0
 
         self.type = ''
         self.action = ''
@@ -34,8 +36,15 @@ class PhysicsEntity:
         pygame.draw.rect(self.screen, (0, 0, 0), pygame.Rect(
             self.pos[0] - camera_offset[0], self.pos[1] - camera_offset[1], self.size[0], self.size[1]))
 
+    def get_mask(self):
+        return pygame.mask.from_surface(pygame.transform.flip(self.animation.img(), self.flip, False))
+
     def render(self, screen, camera_offset=(0, 0)):
         screen.blit(pygame.transform.flip(self.animation.img(), self.flip, False),
+                    (self.pos[0] - camera_offset[0] + self.anim_offset[0], self.pos[1] - camera_offset[1] + self.anim_offset[1]))
+
+    def render_mask(self, screen, camera_offset=(0, 0)):
+        screen.blit(self.get_mask().to_surface(),
                     (self.pos[0] - camera_offset[0] + self.anim_offset[0], self.pos[1] - camera_offset[1] + self.anim_offset[1]))
 
     def check_surroundings(self, tilemap, epsilon):
